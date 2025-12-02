@@ -13,8 +13,14 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: true,
-  credentials: true
+  origin: [
+    'http://localhost:3000',
+    'https://pasovit-technologies-12qau8xzs-imrans-projects-0fcb25ea.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 

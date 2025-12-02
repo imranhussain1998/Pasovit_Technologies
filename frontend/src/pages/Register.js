@@ -40,6 +40,7 @@ const Register = () => {
             placeholder="Full Name"
             value={formData.name}
             onChange={handleChange}
+            autoComplete="name"
             required
           />
         </div>
@@ -51,6 +52,7 @@ const Register = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            autoComplete="email"
             required
           />
         </div>
@@ -62,6 +64,7 @@ const Register = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            autoComplete="new-password"
             required
           />
         </div>
