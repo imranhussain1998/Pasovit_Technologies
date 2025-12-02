@@ -12,10 +12,16 @@ const autoSeed = require('./autoSeed');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
+app.get('/', (req, res) => {
+  res.send('Welcome to the backend!');
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);

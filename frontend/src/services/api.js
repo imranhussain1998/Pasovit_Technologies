@@ -1,67 +1,81 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URLS = [
+  process.env.REACT_APP_API_URL || 'https://bol-backend-production.up.railway.app/api',
+  'http://localhost:5001/api'
+];
 
-const api = axios.create({
-  baseURL: API_URL,
-});
+let currentApiIndex = 0;
 
-api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+const createApiInstance = (baseURL) => {
+  const instance = axios.create({ baseURL, timeout: 5000 });
+  
+  instance.interceptors.request.use((config) => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+  
+  return instance;
+};
+
+const makeRequest = async (requestFn) => {
+  for (let i = 0; i < API_URLS.length; i++) {
+    try {
+      const api = createApiInstance(API_URLS[currentApiIndex]);
+      return await requestFn(api);
+    } catch (error) {
+      console.log(`API ${API_URLS[currentApiIndex]} failed, trying next...`);
+      currentApiIndex = (currentApiIndex + 1) % API_URLS.length;
+      if (i === API_URLS.length - 1) throw error;
+    }
   }
-  return config;
-});
+};
+
+const api = createApiInstance(API_URLS[0]);
+
+
 
 export const authService = {
   login: async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
+    return await makeRequest(api => api.post('/auth/login', { email, password }).then(res => res.data));
   },
   register: async (name, email, password) => {
-    const response = await api.post('/auth/register', { name, email, password });
-    return response.data;
+    return await makeRequest(api => api.post('/auth/register', { name, email, password }).then(res => res.data));
   }
 };
 
 export const productService = {
   getProducts: async (params = {}) => {
-    const response = await api.get('/products', { params });
-    return response.data;
+    return await makeRequest(api => api.get('/products', { params }).then(res => res.data));
   },
   getProduct: async (id) => {
-    const response = await api.get(`/products/${id}`);
-    return response.data;
+    return await makeRequest(api => api.get(`/products/${id}`).then(res => res.data));
   }
 };
 
 export const cartService = {
   getCart: async () => {
-    const response = await api.get('/cart');
-    return response.data;
+    return await makeRequest(api => api.get('/cart').then(res => res.data));
   },
   addToCart: async (productId, size, quantity) => {
-    const response = await api.post('/cart/add', { productId, size, quantity });
-    return response.data;
+    return await makeRequest(api => api.post('/cart/add', { productId, size, quantity }).then(res => res.data));
   },
   updateCartItem: async (productId, size, quantity) => {
-    const response = await api.put('/cart/update', { productId, size, quantity });
-    return response.data;
+    return await makeRequest(api => api.put('/cart/update', { productId, size, quantity }).then(res => res.data));
   },
   removeFromCart: async (productId, size) => {
-    const response = await api.delete('/cart/remove', { data: { productId, size } });
-    return response.data;
+    return await makeRequest(api => api.delete('/cart/remove', { data: { productId, size } }).then(res => res.data));
   }
 };
 
 export const orderService = {
   checkout: async (shippingAddress) => {
-    const response = await api.post('/orders/checkout', { shippingAddress });
-    return response.data;
+    return await makeRequest(api => api.post('/orders/checkout', { shippingAddress }).then(res => res.data));
   },
   getOrders: async () => {
-    const response = await api.get('/orders');
-    return response.data;
+    return await makeRequest(api => api.get('/orders').then(res => res.data));
   }
 };
