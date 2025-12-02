@@ -7,7 +7,6 @@
     "install-frontend": "cd frontend && npm install",
     "server": "cd backend && npm run server",
     "dev": "cd frontend && npm start",
-    "build": "cd frontend && npm run build",
     "start": "cd backend && npm start"
   },
   "keywords": ["mern", "ecommerce", "clothing", "react", "nodejs", "mongodb"],
