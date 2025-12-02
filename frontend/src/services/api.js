@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_URLS = [
-  process.env.REACT_APP_API_URL || 'https://bol-backend-production.up.railway.app/api',
+  process.env.REACT_APP_API_URL || 'https://bol-backend.onrender.com/api',
   'http://localhost:5001/api'
 ];
 
